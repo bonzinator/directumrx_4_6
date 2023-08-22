@@ -12,29 +12,29 @@
 - name: Download libssl1.1
   ansible.builtin.get_url:
     url: http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-    dest: /home/bonzi/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+    dest: /home/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 
 - name: Install a libssl1.1.deb package
   ansible.builtin.apt:
-    deb: /home/bonzi/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
+    deb: /home/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
 
 - name: Download Erlang
   ansible.builtin.get_url:
     url: https://packages.erlang-solutions.com/erlang/debian/pool/esl-erlang_24.0.5-1~debian~stretch_amd64.deb
-    dest: /home/bonzi/esl-erlang_24.0.5-1~debian~stretch_amd64.deb
+    dest: /home/esl-erlang_24.0.5-1~debian~stretch_amd64.deb
 
 - name: Install Erlang
   package:
-    deb: esl-erlang_24.0.5-1~debian~stretch_amd64.deb
+    deb: /home/esl-erlang_24.0.5-1~debian~stretch_amd64.deb
 
 - name: Download rabbitmq-server
   ansible.builtin.get_url:
     url: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.9.5/rabbitmq-server_3.9.5-1_all.deb
-    dest: /home/bonzi/rabbitmq-server_3.9.5-1_all.deb
+    dest: /home/rabbitmq-server_3.9.5-1_all.deb
 
 - name: Install rabbitmq-server
   package:
-    deb: /home/bonzi/rabbitmq-server_3.9.5-1_all.deb
+    deb: /home/rabbitmq-server_3.9.5-1_all.deb
 
 - name: Check rabbitmq is active
   service:

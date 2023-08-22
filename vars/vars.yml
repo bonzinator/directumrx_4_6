@@ -1,30 +1,34 @@
 ---
+allow_world_readable_tmpfiles: true
 
-my_ip: "192.168.122.171"
-directum_dir: "srv/DirectumLauncher"
-home_path_local: "/srv/rxdata/"
-web_protocol: "http"
-http_port_: "80"
-https_port_: "443"
 
-mongo_ip: "192.168.122.171"
-mongo_user: "test"
-mongo_pass: "11111"
-mongo_port: "27017"
+my_ip: 10.76.0.115
+directum_dir: DirectumLauncher
+home_path_local: rxdata
+web_protocol: http
+http_port_: 80
+https_port_: 443
+user_name: bonzi
+user_pass: 1234
 
-rabbit_ip: "192.168.122.171"
-rabbit_user: "test"
-rabbit_pass: "11111"
-rabbit_vhost: "rxhost"
-rabbit_port: "5672"
+mongo_ip: 10.76.0.115
+mongo_user: test
+mongo_pass: 11111
+mongo_port: 27017
 
-postgresql_ip: "192.168.122.171"
-postgresql_user: "testtt"
-postgresql_pass: "11111"
-postgresql_port: "5432"
-postgresql_database: "directumrx_testt"
-postgresql_version: "14"
-service_user_pass: "11111"
+rabbit_ip: 10.76.0.115
+rabbit_user: test
+rabbit_pass: 11111
+rabbit_vhost: rxhost
+rabbit_port: 5672
+
+postgresql_ip: 10.76.0.115
+postgresql_user: testtt
+postgresql_pass: 11111
+postgresql_port: 5432
+postgresql_database: directumrx_testst11
+postgresql_version: 14
+service_user_pass: 11111
 
 
 

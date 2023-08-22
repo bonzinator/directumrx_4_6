@@ -19,68 +19,17 @@
     - apt-transport-https
     - software-properties-common
     - unzip
-    - python3-pip
     - acl
-
-- name: Install psycopg2-binary python package
-  ansible.builtin.pip:
-    name: psycopg2-binary
-
-# - name: Download libssl1.1
-#   ansible.builtin.get_url:
-#     url: http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-#     dest: /home/bonzi/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-
-# - name: Install a libssl1.1.deb package
-#   ansible.builtin.apt:
-#     deb: /home/bonzi/libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-
-- name: Add Docker GPG apt Key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-- name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu focal stable
-    state: present
-
-- name: Install docker
-  apt:
-    name: "{{item}}"
-    state: latest
-    update_cache: yes
-  loop:
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
-
-- name: Check docker is active
-  service:
-    name: docker
-    state: started
-    enabled: yes
-
-- name: Ensure group "docker" exists
-  ansible.builtin.group:
-    name: docker
-    state: present
-
-- name: Adding bonzi to docker group
-  user:
-    name: bonzi
-    groups: docker
-    append: yes
 
 - name: Create a directory DirectumLauncher
   ansible.builtin.file:
-    path: /"{{ directum_dir }}"/
+    path: /srv/{{ directum_dir }}
     state: directory
 
 - name: Copy file App 
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: /"{{ directum_dir }}"/
+    dest: /srv/{{ directum_dir }}
   with_items:
     - DirectumLauncher.tar.gz
     - DirectumRX.tar.gz
@@ -89,106 +38,63 @@
     - Repacking.zip
     - WebHelp.zip
 
-- name: Extract DirectumLauncher "{{directum_dir}}"
+- name: Extract DirectumLauncher {{directum_dir}}
   ansible.builtin.unarchive:
-    src: /"{{ directum_dir }}"/DirectumLauncher.tar.gz
-    dest: /"{{ directum_dir }}"/
+    src: /srv/{{ directum_dir }}/DirectumLauncher.tar.gz
+    dest: /srv/{{ directum_dir }}
     remote_src: true 
 
 - name: Run command @components add_all@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh components add_all
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh components add_all
 
 - name: Run command @set_inotify_instances_limit@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh set_inotify_instances_limit
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh set_inotify_instances_limit
 
 - name: replace config.yml.j2
   ansible.builtin.template:
     src: config.yml.j2
-    dest: /"{{ directum_dir }}"/etc/config.yml
+    dest: /srv/{{ directum_dir }}/etc/config.yml
 
 - name: Create a directory DirectumLauncher
   ansible.builtin.file:
-    path: "{{ home_path_local }}"
+    path: /srv/{{ home_path_local }}
     state: directory
 
 - name: Run command @do.sh mongodb up@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh mongodb up
-
-- name: Install postgresql
-  apt:
-    name: "{{item}}"
-    state: latest
-    update_cache: yes
-  loop:
-    - postgresql-"{{ postgresql_version }}"
-    - postgresql-contrib
-
-- name: "Start and enable postgresql"
-  ansible.builtin.service: 
-    name: postgresql
-    state: started 
-    enabled: yes
-  
-- name: Create user postgresql
-  become_user: postgres
-  community.postgresql.postgresql_user:
-    name: "{{ postgresql_user }}"
-    password: "{{ postgresql_pass }}"
-    role_attr_flags: SUPERUSER
-
-- name: Create a new database 
-  become_user: postgres
-  community.postgresql.postgresql_db:
-    name: "{{ postgresql_database }}"
-
-- name: Grant privs to librarian and reader on database library
-  become_user: postgres
-  community.postgresql.postgresql_privs:
-    database: "{{ postgresql_database }}"
-    state: present
-    privs: ALL
-    roles: "{{ postgresql_user }}"
-    type: database
-    grant_option: true
-
-- name: replace pg_hba.conf.j2
-  template:
-    src: pg_hba.conf.j2
-    dest: /etc/postgresql/"{{ postgresql_version }}"/main/pg_hba.conf
-  
-- name: replace postgresql.conf.j2
-  template:
-    src: postgresql.conf.j2
-    dest: /etc/postgresql/"{{ postgresql_version }}"/main/postgresql.conf 
-
-- name: "Start and enable postgresql"
-  ansible.builtin.service: 
-    name: postgresql
-    state: restarted 
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh mongodb up
 
 - name: Run command @generate_data_protection_cert_from_config@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh generate_data_protection_cert_from_config
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh generate_data_protection_cert_from_config
 
 - name: Run command @do.sh db up@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh db up
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh db up
 
 - name: Run command @do.sh platform install@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh platform install
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh platform install
 
 - name: Run command @do.sh mongodb up@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh mongodb up
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh mongodb up
 
 - name: Run command @do.sh webhelp install@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh webhelp install
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh webhelp install
 
 - name: Run command @do.sh rx install@
   ansible.builtin.command:
-    cmd: /"{{ directum_dir }}"/do.sh rx install
+    chdir: /srv/{{ directum_dir }}
+    cmd: ./do.sh rx install
